@@ -37,7 +37,7 @@ export async function generateReplies(
   options: ReplyOptions
 ): Promise<string[]> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const prompt = buildPrompt(options)
 
@@ -165,7 +165,7 @@ export async function editReply(
   editType: 'shorten' | 'expand' | 'professional' | 'friendly' | 'funny' | 'polite'
 ): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const editInstructions = {
       shorten: 'Make this reply shorter and more concise',
@@ -194,7 +194,7 @@ export async function editReply(
  */
 export async function detectIntent(message: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const prompt = `Analyze this message and identify the primary intent. Choose ONE from:
 - question
