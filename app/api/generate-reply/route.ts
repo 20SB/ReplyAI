@@ -4,19 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { generateReplies } from '@/lib/ai/reply-generator'
+import { generateReplies } from '@/lib/ai/reply-generator-hf' // Using Hugging Face (FREE)
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if API key is set
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('GEMINI_API_KEY not set')
-      return NextResponse.json(
-        { error: 'API key not configured' },
-        { status: 500 }
-      )
-    }
-
     const body = await request.json()
     const { message, contactName, tone } = body
 

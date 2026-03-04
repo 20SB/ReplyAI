@@ -49,9 +49,11 @@ export async function generateReplies(
     const replies = parseReplies(text)
 
     return replies.length > 0 ? replies : [text.trim()]
-  } catch (error) {
+  } catch (error: any) {
     console.error('Reply generation error:', error)
-    throw new Error('Failed to generate replies')
+    console.error('Error type:', typeof error)
+    console.error('Error details:', JSON.stringify(error, null, 2))
+    throw error // Re-throw original error instead of generic message
   }
 }
 
