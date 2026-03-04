@@ -37,7 +37,7 @@ export async function generateReplies(
   options: ReplyOptions
 ): Promise<string[]> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const prompt = buildPrompt(options)
 
@@ -115,16 +115,20 @@ function buildPrompt(options: ReplyOptions): string {
   }
 
   // Instructions
-  prompt += `Generate 3-5 different reply options. Each reply should:
-1. Be contextually appropriate
-2. Match the recipient's communication style
-3. Be natural and conversational
-4. Consider the relationship and history
+  prompt += `Generate 3-5 DIFFERENT, NATURAL reply options.
+
+CRITICAL RULES:
+- Sound like a REAL PERSON texting, not a robot or corporate email
+- Vary length, style, and approach across options (some short, some detailed)
+- Use natural language, contractions, and casual phrasing
+- NO formal phrases like "Thank you for", "I appreciate", "Kindly", "Regrettably"
+- Add personality - be conversational and human
+- Each reply should feel distinctly different
 
 Format as a numbered list:
-1. [reply option 1]
-2. [reply option 2]
-3. [reply option 3]
+1. [first reply]
+2. [second reply]
+3. [third reply]
 ...
 
 Only provide the replies, no explanations.`
@@ -167,7 +171,7 @@ export async function editReply(
   editType: 'shorten' | 'expand' | 'professional' | 'friendly' | 'funny' | 'polite'
 ): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const editInstructions = {
       shorten: 'Make this reply shorter and more concise',
@@ -196,7 +200,7 @@ export async function editReply(
  */
 export async function detectIntent(message: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const prompt = `Analyze this message and identify the primary intent. Choose ONE from:
 - question
