@@ -5,15 +5,57 @@
  * AI Contextual Reply Assistant
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface Contact {
+  _id: string
+  name: string
+  relation: string
+  communicationPreferences: {
+    tone: string
+    emojiLevel: string
+  }
+}
 
 export default function Home() {
+  const router = useRouter()
   const [inputMessage, setInputMessage] = useState('')
   const [contactName, setContactName] = useState('')
+  const [selectedContactId, setSelectedContactId] = useState<string>('')
   const [selectedTone, setSelectedTone] = useState<string>('friendly')
   const [replies, setReplies] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [contacts, setContacts] = useState<Contact[]>([])
+
+  useEffect(() => {
+    fetchContacts()
+  }, [])
+
+  const fetchContacts = async () => {
+    try {
+      const res = await fetch('/api/contacts')
+      const data = await res.json()
+      if (data.success) {
+        setContacts(data.contacts)
+      }
+    } catch (error) {
+      console.error('Fetch contacts error:', error)
+    }
+  }
+
+  const handleContactSelect = (contactId: string) => {
+    setSelectedContactId(contactId)
+    const contact = contacts.find((c) => c._id === contactId)
+    if (contact) {
+      setContactName(contact.name)
+      // Auto-set tone based on contact preference
+      setSelectedTone(contact.communicationPreferences.tone)
+    } else {
+      setContactName('')
+    }
+  }
 
   const tones = [
     { value: 'professional', label: 'Professional', emoji: '💼' },
@@ -69,9 +111,18 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <header className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-            ✨ ReplyAI
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <div></div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+              ✨ ReplyAI
+            </h1>
+            <button
+              onClick={() => router.push('/contacts')}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium"
+            >
+              👥 Contacts
+            </button>
+          </div>
           <p className="text-gray-600 text-lg">
             Your smart contextual reply assistant
           </p>
@@ -79,19 +130,49 @@ export default function Home() {
 
         {/* Main Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6">
-          {/* Contact Name */}
+          {/* Contact Selection */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Who are you replying to? (Optional)
+              Who are you replying to?
             </label>
-            <input
-              type="text"
-              value={contactName}
-              onChange={(e) => setContactName(e.target.value)}
-              placeholder="e.g., John, Sarah, Boss, Friend..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="flex gap-2">
+              <select
+                value={selectedContactId}
+                onChange={(e) => handleContactSelect(e.target.value)}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select a saved contact or type manually...</option>
+                {contacts.map((contact) => (
+                  <option key={contact._id} value={contact._id}>
+                    {contact.name}
+                    {contact.relation ? ` (${contact.relation})` : ''}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => router.push('/contacts')}
+                className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium whitespace-nowrap"
+              >
+                + Add
+              </button>
+            </div>
           </div>
+
+          {/* Manual Contact Name (shown when no contact selected) */}
+          {!selectedContactId && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Or type manually (Optional)
+              </label>
+              <input
+                type="text"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder="e.g., John, Sarah, Boss, Friend..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
 
           {/* Message Input */}
           <div className="mb-4">
