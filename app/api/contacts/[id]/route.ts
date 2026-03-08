@@ -59,11 +59,9 @@ export async function PUT(
       {
         name: body.name,
         relation: body.relation,
-        communicationPreferences: {
-          tone: body.tone || 'friendly',
-          emojiLevel: body.emojiLevel || 'medium',
-          replySpeed: body.replySpeed || 'normal',
-        },
+        tone: body.tone || 'friendly',
+        emojiLevel: body.emojiLevel || 'medium',
+        replySpeed: body.replySpeed || 'normal',
         notes: body.notes || [],
         topics: body.topics || [],
         insideJokes: body.insideJokes || [],

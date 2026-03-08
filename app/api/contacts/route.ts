@@ -16,9 +16,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
 
-    let query = {}
+    let query: any = { userId: 'default_user' } // Filter by user
     if (search) {
       query = {
+        userId: 'default_user',
         $or: [
           { name: { $regex: search, $options: 'i' } },
           { relation: { $regex: search, $options: 'i' } },
@@ -58,13 +59,12 @@ export async function POST(request: NextRequest) {
     }
 
     const contact = await Contact.create({
+      userId: 'default_user', // Single user for MVP
       name,
       relation: relation || '',
-      communicationPreferences: {
-        tone: tone || 'friendly',
-        emojiLevel: emojiLevel || 'medium',
-        replySpeed: replySpeed || 'normal',
-      },
+      tone: tone || 'friendly',
+      emojiLevel: emojiLevel || 'medium',
+      replySpeed: replySpeed || 'normal',
       notes: notes || [],
       topics: topics || [],
       insideJokes: insideJokes || [],
