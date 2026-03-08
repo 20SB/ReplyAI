@@ -1,10 +1,11 @@
 /**
- * Generate Reply API Route
+ * Generate Reply API Route (Personalized)
  * POST /api/generate-reply
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { generateReplies } from '@/lib/ai/reply-generator-hf' // Using Hugging Face (FREE)
+import { generatePersonalizedReplies } from '@/lib/ai/personalized-reply-generator'
+import { subhaProfile } from '@/lib/db/seed-profile'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,16 +25,15 @@ export async function POST(request: NextRequest) {
     const contact = contactName
       ? {
           name: contactName,
-          tone: 'friendly' as const,
-          emojiLevel: 'medium' as const,
         }
       : undefined
 
-    // Generate replies
-    const replies = await generateReplies({
+    // Generate personalized replies using Subha's profile
+    const replies = await generatePersonalizedReplies({
       message,
+      userProfile: subhaProfile,
       contact,
-      tone: tone || 'friendly',
+      tone: tone || undefined,
     })
 
     return NextResponse.json({
