@@ -182,7 +182,12 @@ export default function Home() {
         {/* Header */}
         <header className="text-center mb-8">
           <div className="flex items-center justify-between mb-4">
-            <div></div>
+            <button
+              onClick={() => router.push('/settings')}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium"
+            >
+              ⚙️ Settings
+            </button>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
               ✨ ReplyAI
             </h1>
