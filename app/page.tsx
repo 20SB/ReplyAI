@@ -28,6 +28,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [contacts, setContacts] = useState<Contact[]>([])
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [selectedReplyIndex, setSelectedReplyIndex] = useState<number | null>(null)
 
   useEffect(() => {
     fetchContacts()
@@ -130,6 +132,48 @@ export default function Home() {
     navigator.clipboard.writeText(text)
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex(null), 2000)
+  }
+
+  const handleEditReply = async (
+    originalReply: string,
+    index: number,
+    editType: 'shorten' | 'expand' | 'change_tone',
+    newTone?: string
+  ) => {
+    setEditingIndex(index)
+    try {
+      const response = await fetch('/api/edit-reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          originalReply,
+          editType,
+          newTone,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to edit reply')
+      }
+
+      const data = await response.json()
+      if (data.success) {
+        // Update the reply in the list
+        const newReplies = [...replies]
+        newReplies[index] = data.editedReply
+        setReplies(newReplies)
+      }
+    } catch (error) {
+      console.error('Edit error:', error)
+      alert('Failed to edit reply. Please try again.')
+    } finally {
+      setEditingIndex(null)
+    }
+  }
+
+  const markAsUsed = (index: number) => {
+    setSelectedReplyIndex(index)
+    // Could also update the conversation in the database here
   }
 
   return (
@@ -267,27 +311,85 @@ export default function Home() {
             {replies.map((reply, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+                className={`bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all ${
+                  selectedReplyIndex === index ? 'ring-2 ring-green-500' : ''
+                }`}
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-blue-600 mb-2">
-                      Option {index + 1}
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="text-sm font-medium text-blue-600">
+                        Option {index + 1}
+                      </div>
+                      {selectedReplyIndex === index && (
+                        <span className="px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">
+                          ✓ Selected
+                        </span>
+                      )}
                     </div>
                     <p className="text-gray-900 text-lg leading-relaxed">
                       {reply}
                     </p>
                   </div>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => handleCopy(reply, index)}
+                      className={`px-4 py-2 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+                        copiedIndex === index
+                          ? 'bg-green-500 text-white'
+                          : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                      }`}
+                    >
+                      {copiedIndex === index ? '✓ Copied!' : '📋 Copy'}
+                    </button>
+                    <button
+                      onClick={() => markAsUsed(index)}
+                      disabled={selectedReplyIndex === index}
+                      className={`px-4 py-2 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
+                        selectedReplyIndex === index
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-green-100 text-green-700 hover:bg-green-200'
+                      }`}
+                    >
+                      {selectedReplyIndex === index ? 'Used' : '✓ Mark as Used'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Edit Tools */}
+                <div className="flex flex-wrap gap-2 pt-4 border-t">
                   <button
-                    onClick={() => handleCopy(reply, index)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      copiedIndex === index
-                        ? 'bg-green-500 text-white'
-                        : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                    }`}
+                    onClick={() => handleEditReply(reply, index, 'shorten')}
+                    disabled={editingIndex === index}
+                    className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50"
                   >
-                    {copiedIndex === index ? '✓ Copied!' : '📋 Copy'}
+                    {editingIndex === index ? '⏳' : '✂️'} Shorten
                   </button>
+                  <button
+                    onClick={() => handleEditReply(reply, index, 'expand')}
+                    disabled={editingIndex === index}
+                    className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50"
+                  >
+                    {editingIndex === index ? '⏳' : '📝'} Expand
+                  </button>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleEditReply(reply, index, 'change_tone', e.target.value)
+                        e.target.value = '' // Reset
+                      }
+                    }}
+                    disabled={editingIndex === index}
+                    className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50"
+                  >
+                    <option value="">🎨 Change Tone...</option>
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="funny">Funny</option>
+                    <option value="polite">Polite</option>
+                    <option value="short">Short</option>
+                    <option value="detailed">Detailed</option>
+                  </select>
                 </div>
               </div>
             ))}
