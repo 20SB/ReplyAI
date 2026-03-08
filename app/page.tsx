@@ -92,11 +92,37 @@ export default function Home() {
 
       const data = await response.json()
       setReplies(data.replies || [])
+
+      // Save conversation to history
+      if (data.replies && data.replies.length > 0) {
+        await saveConversation(data.replies)
+      }
     } catch (error) {
       console.error('Error:', error)
       alert('Failed to generate replies. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const saveConversation = async (aiSuggestions: string[]) => {
+    try {
+      await fetch('/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contactId: selectedContactId || null,
+          contactName: contactName || 'Someone',
+          incomingMessage: inputMessage,
+          aiSuggestions,
+          selectedReply: null, // User hasn't selected yet
+          userActualReply: null, // User hasn't sent yet
+          tone: selectedTone,
+        }),
+      })
+    } catch (error) {
+      console.error('Save conversation error:', error)
+      // Don't alert - this is background save
     }
   }
 

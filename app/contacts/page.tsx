@@ -163,6 +163,12 @@ export default function ContactsPage() {
 
                   <div className="flex gap-2">
                     <button
+                      onClick={() => router.push(`/contacts/${contact._id}/history`)}
+                      className="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded"
+                    >
+                      📜 History
+                    </button>
+                    <button
                       onClick={() => router.push(`/contacts/${contact._id}/edit`)}
                       className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded"
                     >
