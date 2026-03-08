@@ -7,11 +7,9 @@ interface Contact {
   _id: string
   name: string
   relation: string
-  communicationPreferences: {
-    tone: string
-    emojiLevel: string
-    replySpeed: string
-  }
+  tone: string
+  emojiLevel: string
+  replySpeed: string
   notes: string[]
   topics: string[]
   insideJokes: string[]
@@ -30,7 +28,7 @@ export default function EditContactPage({
     relation: '',
     tone: 'friendly',
     emojiLevel: 'medium',
-    replySpeed: 'normal',
+    replySpeed: 'medium',
     notes: '',
     topics: '',
     insideJokes: '',
@@ -52,9 +50,9 @@ export default function EditContactPage({
         setFormData({
           name: c.name,
           relation: c.relation || '',
-          tone: c.communicationPreferences.tone,
-          emojiLevel: c.communicationPreferences.emojiLevel,
-          replySpeed: c.communicationPreferences.replySpeed,
+          tone: c.tone,
+          emojiLevel: c.emojiLevel,
+          replySpeed: c.replySpeed,
           notes: c.notes.join(', '),
           topics: c.topics.join(', '),
           insideJokes: c.insideJokes.join(', '),

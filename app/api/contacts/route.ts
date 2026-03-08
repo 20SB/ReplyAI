@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       relation: relation || '',
       tone: tone || 'friendly',
       emojiLevel: emojiLevel || 'medium',
-      replySpeed: replySpeed || 'normal',
+      replySpeed: replySpeed || 'medium', // Changed from 'normal' to 'medium'
       notes: notes || [],
       topics: topics || [],
       insideJokes: insideJokes || [],

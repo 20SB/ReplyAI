@@ -61,7 +61,7 @@ export async function PUT(
         relation: body.relation,
         tone: body.tone || 'friendly',
         emojiLevel: body.emojiLevel || 'medium',
-        replySpeed: body.replySpeed || 'normal',
+        replySpeed: body.replySpeed || 'medium', // Changed from 'normal' to 'medium'
         notes: body.notes || [],
         topics: body.topics || [],
         insideJokes: body.insideJokes || [],

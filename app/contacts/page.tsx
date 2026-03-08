@@ -7,11 +7,9 @@ interface Contact {
   _id: string
   name: string
   relation: string
-  communicationPreferences: {
-    tone: string
-    emojiLevel: string
-    replySpeed: string
-  }
+  tone: string
+  emojiLevel: string
+  replySpeed: string
   notes: string[]
   topics: string[]
   insideJokes: string[]
@@ -132,10 +130,10 @@ export default function ContactsPage() {
 
                     <div className="flex gap-4 mt-3 text-sm text-gray-500">
                       <span>
-                        Tone: <strong>{contact.communicationPreferences.tone}</strong>
+                        Tone: <strong>{contact.tone}</strong>
                       </span>
                       <span>
-                        Emojis: <strong>{contact.communicationPreferences.emojiLevel}</strong>
+                        Emojis: <strong>{contact.emojiLevel}</strong>
                       </span>
                     </div>
 

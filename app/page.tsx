@@ -12,10 +12,8 @@ interface Contact {
   _id: string
   name: string
   relation: string
-  communicationPreferences: {
-    tone: string
-    emojiLevel: string
-  }
+  tone: string
+  emojiLevel: string
 }
 
 export default function Home() {
@@ -53,7 +51,7 @@ export default function Home() {
     if (contact) {
       setContactName(contact.name)
       // Auto-set tone based on contact preference
-      setSelectedTone(contact.communicationPreferences.tone)
+      setSelectedTone(contact.tone)
     } else {
       setContactName('')
     }
